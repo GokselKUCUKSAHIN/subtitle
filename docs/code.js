@@ -4,6 +4,7 @@ new Vue({
     timeStampRegEx: /(\d{1,2}:)?(\d{1,2}:\d{1,2})/gi,
     squreBracket: /^\[[\w\s]+]$/gi,
     inputText: "",
+    urlText: "",
     result: "",
     btnCopyText: "Copy",
   },
@@ -38,5 +39,11 @@ new Vue({
       });
       return outPutArray.join(" ");
     },
+    goBrr(){
+      window.alert(`Go! Brr says: ${this.urlText}`);
+      // subtitleFunction(this.urlText, "en").then(res => {
+      //   this.result = res;
+      // })
+    }
   },
 });

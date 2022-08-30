@@ -1,25 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Subtitle Convert</title>
-  <!-- Bootstrap CSS -->
-  <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
-      integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
-      crossorigin="anonymous"
-  />
-  <!-- SUBTITLE MODULE -->
-  <script src="subtitle.js"></script>
-  <!-- VUE JS -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-  <!-- MY CSS -->
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div id="app">
+<script setup lang="ts">
+import {ref} from "vue";
+import {getYoutubeIdfunction} from "./get-youtube-id";
+import {getYouTubeSubtitle} from "./index";
+
+type CopyButton = "Copy" | "Copied...";
+const timeStampRegEx = /(\d{1,2}:)?(\d{1,2}:\d{1,2})/gi;
+const squreBracket = /^\[[\w\s]+]$/gi;
+
+const btnCopyText = ref<CopyButton>("Copy");
+const inputText = ref("");
+const urlText = ref("");
+const result = ref("");
+
+function updateText(): void {
+  result.value = convertSubtitleText(inputText.value);
+}
+
+function copyText(): void {
+  // copy to clipboard
+  const elem = document.createElement("textarea");
+  elem.value = result.value;
+  document.body.appendChild(elem);
+  elem.select();
+  document.execCommand("copy");
+  document.body.removeChild(elem);
+  updateCopyButtonText();
+}
+
+function updateCopyButtonText(delay: number = 1500): void {
+  // change button text
+  btnCopyText.value = "Copied...";
+  setTimeout(() => {
+    btnCopyText.value = "Copy";
+  }, delay);
+}
+
+function convertSubtitleText(text: string): string {
+  const outPutArray: string[] = [];
+  text.split("\n").forEach((line) => {
+    if (line.match(timeStampRegEx)) return;
+    if (line.match(squreBracket)) return;
+    outPutArray.push(line);
+  });
+  return outPutArray.join(" ");
+}
+
+async function goBrr() {
+  window.alert(`Go! Brr says: ${urlText.value}`);
+  const strRes: string = await getYouTubeSubtitle(urlText.value, "en", false) + "";
+  result.value = strRes;
+}
+</script>
+
+<template>
   <div class="container mt-4">
     <h2 class="mb-3">
       <span style="color: #ed265d">Subtitle</span> Convert
@@ -67,7 +100,7 @@
                 class="btn btn-sm btn-success mt-2 custom"
                 @click="copyText"
             >
-              {{btnCopyText}}
+              {{ btnCopyText }}
             </button>
           </div>
         </form>
@@ -83,26 +116,4 @@
     </footer>
     <!-- Footer -->
   </div>
-</div>
-<!-- VUE INSTANCE -->
-<script src="code.js"></script>
-<!-- jQuery -->
-<script
-    src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-    crossorigin="anonymous"
-></script>
-<!-- Popper.js -->
-<script
-    src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"
-    integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4"
-    crossorigin="anonymous"
-></script>
-<!-- Bootstrap JS -->
-<script
-    src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"
-    integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1"
-    crossorigin="anonymous"
-></script>
-</body>
-</html>
+</template>

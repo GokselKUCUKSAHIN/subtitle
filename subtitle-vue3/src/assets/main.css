@@ -1,0 +1,14 @@
+@import "./base.css";
+
+textarea {
+  resize: none;
+}
+
+input:read-only,
+textarea:read-only {
+  background-color: #fff !important;
+}
+
+.custom {
+  width: 100px !important;
+}
